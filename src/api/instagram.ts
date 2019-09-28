@@ -310,7 +310,7 @@ export class Instagram<PostType> extends EventEmitter {
             await this.page.close();
         }
         if (!this.browserDisconnected) {
-            await this.browser.close();
+            await this.browser.close().catch(e => e);
         }
 
         // Clear request buffers
@@ -321,7 +321,7 @@ export class Instagram<PostType> extends EventEmitter {
         // Clear response buffers
         await this.responseBufferLock.acquireAsync();
         this.responseBuffer = [];
-        this.responseBufferLock.release();
+        this.responseBufferLock.release().catch(e => e);
     }
 
     /**
@@ -473,7 +473,7 @@ export class Instagram<PostType> extends EventEmitter {
      */
     protected async postPage(post: string, retries: number) {
         // Create page
-        const postPage = await this.browser.newPage();
+        const postPage = await this.browser.newPage().catch(e => e);
         await postPage.setRequestInterception(true);
         postPage.on("request", async (req) => {
             if (!req.url().includes("/p/" + post)) {
@@ -652,7 +652,7 @@ export class Instagram<PostType> extends EventEmitter {
         );
 
         // New page
-        this.page = await this.browser.newPage();
+        this.page = await this.browser.newPage().catch(e => e);
         await this.progress(Progress.OPENING);
 
         // Attempt to visit URL
@@ -676,7 +676,7 @@ export class Instagram<PostType> extends EventEmitter {
 
             // Close existing attempt
             await this.page.close();
-            await this.browser.close();
+            await this.browser.close().catch(e => e);
 
             // Retry
             await this.constructPage();
